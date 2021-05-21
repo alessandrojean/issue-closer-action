@@ -22,6 +22,14 @@ inputs:
                                           // You can use {match} as a placeholder to the first match.
         ignoreCase: boolean | undefined;  // Defines if the regex will be case insensitive.
       }
+  lock-command:
+    required: false
+    default: Lock this issue
+    description: Command to be used to lock an issue.
+  triage-team-slug:
+    required: false
+    default:
+    description: Team from the organization with the members allowed to run commands.
 runs:
   using: node12
   main: dist/index.js

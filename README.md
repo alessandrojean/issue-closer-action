@@ -31,6 +31,7 @@ jobs:
               "message": "@${issue.user.login} this issue was automatically closed because it did not follow the issue template"
             }
           ]
+        triage-team-slug: project-issue-triagers
 ```
 
 ## Inputs
@@ -40,6 +41,8 @@ jobs:
 | `repo-token` | GitHub token |
 | `rules` | A JSON-compliant string containing a list of rules, where a rule consists of the content below. |
 | `ignoreLabel` | Optional label name. If present, action is skipped. |
+| `lock-command` | Optional lock command text. Defaults to "Lock this issue". |
+| `triage-team-slug` | Optional team slug from the organization with the members allowed to run commands. If empty, commands are ignored. |
 
 ### Rule
 

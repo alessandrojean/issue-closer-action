@@ -12,7 +12,47 @@ const ALLOWED_ACTIONS = ['opened', 'edited', 'reopened'];
 
 async function run() {
   try {
-    const { issue, payload } = github.context;
+    const { actor, eventName, issue, payload, repo } = github.context;
+
+    // Handle the special commands such as lock issue.
+    if (eventName === 'issue_comment' && payload.action === 'created') {
+      const lockCommand: string = core.getInput('lock-command');
+      const commentBody: string = payload.comment.body;
+      
+      if (!commentBody.startsWith(lockCommand)) {
+        return;
+      }
+
+      const triageTeamSlug: string = core.getInput('triage-team-slug');
+
+      if (triageTeamSlug.length === 0) {
+        return;
+      }
+
+      const client = github.getOctokit(
+        core.getInput('repo-token', {required: true})
+      );
+
+      const allowedMembers = await client.teams.listMembersInOrg({
+        org: repo.owner,
+        team_slug: triageTeamSlug
+      });
+
+      if (allowedMembers.status !== 200) {
+        core.info('Failed to fetch the triage team members');
+        return;
+      }
+
+      if (allowedMembers.data.find(member => member.login === actor)) {
+        await client.issues.lock({
+          owner: repo.owner,
+          repo: repo.repo,
+          issue_number: payload.issue.number
+        });
+      }
+
+      return;
+    }
 
     // Do nothing if it's wasn't a relevant action or it's not an issue
     if (ALLOWED_ACTIONS.indexOf(payload.action) === -1 || !payload.issue) {

@@ -2,6 +2,8 @@ name: Issue closer test
 on:
   issues:
     types: [opened, edited, reopened]
+  issue_comment:
+    types: [created]
 jobs:
   autoclose:
     runs-on: ubuntu-latest
